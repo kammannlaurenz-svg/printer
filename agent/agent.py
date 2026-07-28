@@ -120,12 +120,28 @@ def is_image_job(job):
     return job_type == "image" or bool(get_image_text(job))
 
 
+BOX_MARK = "[BOX]"
+
+
 def print_text_job(job):
     text = job.get("text") or ""
     username = job.get("username") or "Unbekannt"
 
+    # Erste Zeile kann eine Box-Ueberschrift sein:  "[BOX]Titel"
+    title = None
+    body = text
+    nl = text.find("\n")
+    first_line = text if nl == -1 else text[:nl]
+    if first_line.startswith(BOX_MARK):
+        title = first_line[len(BOX_MARK):].strip()
+        body = "" if nl == -1 else text[nl + 1:]
+
     ep.ori(0)
-    ep.line(text)
+    if title:
+        ep.box(title.upper())
+        ep.line("")
+    if body:
+        ep.line(body)
     ep.line("")
     ep.ori(2)
     ep.line(f"--{username}")

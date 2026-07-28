@@ -1,6 +1,6 @@
 // Einfacher Service-Worker: App-Huelle offline verfuegbar,
 // Supabase-Aufrufe gehen immer ans Netz.
-const CACHE = "drucker-v1";
+const CACHE = "drucker-v2";
 const ASSETS = [
   "./",
   "./index.html",

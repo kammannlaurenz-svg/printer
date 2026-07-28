@@ -11,7 +11,6 @@ const HEADERS = {
 let currentUser = "";
 let imageDataUrl = "";
 let imageName = "";
-let pollTimer = null;
 
 // ---------- Hilfen ----------
 function $(id) { return document.getElementById(id); }
@@ -19,16 +18,6 @@ function $(id) { return document.getElementById(id); }
 function setStatus(el, msg, kind) {
   el.textContent = msg;
   el.className = "status" + (kind ? " " + kind : "");
-}
-
-function relTime(iso) {
-  if (!iso) return "";
-  const d = new Date(iso);
-  const s = Math.floor((Date.now() - d.getTime()) / 1000);
-  if (s < 60) return "gerade eben";
-  if (s < 3600) return `vor ${Math.floor(s / 60)} Min`;
-  if (s < 86400) return `vor ${Math.floor(s / 3600)} Std`;
-  return d.toLocaleDateString("de-DE", { day: "2-digit", month: "2-digit", hour: "2-digit", minute: "2-digit" });
 }
 
 // ---------- Login ----------
@@ -69,7 +58,6 @@ async function login() {
 function logout() {
   localStorage.removeItem("druck_user");
   currentUser = "";
-  if (pollTimer) clearInterval(pollTimer);
   $("appView").hidden = true;
   $("loginView").hidden = false;
 }
@@ -78,19 +66,20 @@ function openApp() {
   $("loginView").hidden = true;
   $("appView").hidden = false;
   $("showUser").textContent = currentUser;
-  loadHistory();
-  if (pollTimer) clearInterval(pollTimer);
-  pollTimer = setInterval(loadHistory, 3000);
+  if (!$("listItems").children.length) {
+    addItem();
+    addItem();
+  }
 }
 
 // ---------- Tabs ----------
 function showTab(which) {
-  const text = which === "text";
-  $("pageText").classList.toggle("active", text);
-  $("pageImage").classList.toggle("active", !text);
-  $("tabText").classList.toggle("active", text);
-  $("tabImage").classList.toggle("active", !text);
+  for (const t of ["text", "list", "image"]) {
+    $("page" + cap(t)).classList.toggle("active", t === which);
+    $("tab" + cap(t)).classList.toggle("active", t === which);
+  }
 }
+function cap(s) { return s[0].toUpperCase() + s.slice(1); }
 
 // ---------- Senden: Text ----------
 async function sendText() {
@@ -101,14 +90,111 @@ async function sendText() {
   setStatus(st, "Sende…", "");
   $("sendTextBtn").disabled = true;
   try {
-    await createJob({ type: "text", text, username: currentUser, status: "pending" });
+    await createJob({ type: "text", text: "[BOX]Notiz\n" + text, username: currentUser, status: "pending" });
     $("text").value = "";
     setStatus(st, "Gesendet ✅", "ok");
-    loadHistory();
   } catch (e) {
     setStatus(st, "Fehler: " + e.message, "err");
   } finally {
     $("sendTextBtn").disabled = false;
+  }
+}
+
+// ---------- Liste ----------
+let listMode = "list"; // "list" | "todo"
+
+function setListMode(mode) {
+  listMode = mode;
+  $("modeList").classList.toggle("active", mode === "list");
+  $("modeTodo").classList.toggle("active", mode === "todo");
+  renderBon();
+}
+
+function addItem(value = "") {
+  const row = document.createElement("div");
+  row.className = "item";
+  const input = document.createElement("input");
+  input.placeholder = "Eintrag…";
+  input.value = value;
+  input.addEventListener("input", renderBon);
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      addItem();
+    }
+  });
+  const del = document.createElement("button");
+  del.type = "button";
+  del.className = "del";
+  del.textContent = "✕";
+  del.onclick = () => { row.remove(); renderBon(); };
+  row.appendChild(input);
+  row.appendChild(del);
+  $("listItems").appendChild(row);
+  input.focus();
+  renderBon();
+}
+
+function getItems() {
+  return [...$("listItems").querySelectorAll("input")]
+    .map((i) => i.value.trim())
+    .filter(Boolean);
+}
+
+function marker() {
+  return listMode === "todo" ? "[ ] " : "• ";
+}
+
+// Text, der wirklich gedruckt wird
+function buildListText() {
+  const title = $("listTitle").value.trim();
+  const items = getItems();
+  const lines = [];
+  if (title) lines.push("[BOX]" + title);
+  for (const it of items) lines.push(marker() + it);
+  return lines.join("\n");
+}
+
+// Live-Vorschau des Bons
+function renderBon() {
+  const body = $("bonBody");
+  const title = $("listTitle").value.trim();
+  const items = getItems();
+  let html = "";
+  if (title) html += `<div class="bon-title">${escapeHtml(title)}</div>`;
+  if (items.length) {
+    html += '<div class="bon-items">';
+    for (const it of items) {
+      const mark = listMode === "todo"
+        ? '<span class="bon-box"></span>'
+        : '<span class="bon-dot">•</span>';
+      html += `<div class="bon-item">${mark}<span>${escapeHtml(it)}</span></div>`;
+    }
+    html += "</div>";
+  }
+  if (!title && !items.length) {
+    html = '<div class="bon-empty">Überschrift und Punkte eingeben…</div>';
+  } else {
+    html += `<div class="bon-foot">--${escapeHtml(currentUser || "Ich")}</div>`;
+  }
+  body.innerHTML = html;
+}
+
+async function sendList() {
+  const st = $("listStatus");
+  const items = getItems();
+  const text = buildListText();
+  if (!items.length) return setStatus(st, "Bitte mindestens einen Punkt eingeben.", "err");
+
+  setStatus(st, "Sende…", "");
+  $("sendListBtn").disabled = true;
+  try {
+    await createJob({ type: "text", text, username: currentUser, status: "pending" });
+    setStatus(st, "Gesendet ✅", "ok");
+  } catch (e) {
+    setStatus(st, "Fehler: " + e.message, "err");
+  } finally {
+    $("sendListBtn").disabled = false;
   }
 }
 
@@ -171,7 +257,6 @@ async function sendImage() {
     $("imageFile").value = "";
     $("preview").style.display = "none";
     setStatus(st, "Bild gesendet ✅", "ok");
-    loadHistory();
   } catch (e) {
     setStatus(st, "Fehler: " + e.message, "err");
   } finally {
@@ -186,50 +271,6 @@ async function createJob(job) {
     body: JSON.stringify(job),
   });
   if (!r.ok) throw new Error(await r.text());
-}
-
-// ---------- Verlauf ----------
-async function loadHistory() {
-  if (!currentUser) return;
-  try {
-    const q = new URLSearchParams({
-      username: `eq.${currentUser}`,
-      select: "id,type,text,filename,status,created_at,printed_at",
-      order: "created_at.desc",
-      limit: "10",
-    });
-    const r = await fetch(`${REST}/print_jobs?${q}`, { headers: HEADERS });
-    if (!r.ok) return;
-    renderJobs(await r.json());
-  } catch (_) { /* offline o.ae. – still */ }
-}
-
-function renderJobs(jobs) {
-  const ul = $("jobs");
-  if (!jobs.length) {
-    ul.innerHTML = '<li class="empty">Noch nichts gedruckt.</li>';
-    return;
-  }
-  const label = { pending: "wartet", printed: "gedruckt", error: "Fehler" };
-  ul.innerHTML = jobs
-    .map((j) => {
-      const isImg = j.type === "image" || !!j.filename;
-      const ic = isImg ? "🖼️" : "📝";
-      let title = isImg ? (j.filename || "Bild") : (j.text || "").replace(/\s+/g, " ").trim();
-      if (title.length > 42) title = title.slice(0, 42) + "…";
-      if (!title) title = isImg ? "Bild" : "(leer)";
-      const status = j.status || "pending";
-      const when = status === "printed" ? relTime(j.printed_at) : relTime(j.created_at);
-      return `<li class="job">
-        <div class="ic">${ic}</div>
-        <div class="body">
-          <div class="t">${escapeHtml(title)}</div>
-          <div class="time">${when}</div>
-        </div>
-        <span class="badge ${status}">${label[status] || status}</span>
-      </li>`;
-    })
-    .join("");
 }
 
 function escapeHtml(s) {

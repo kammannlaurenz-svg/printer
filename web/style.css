@@ -54,23 +54,14 @@ body {
 }
 
 header.app {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 10px 4px 20px;
+  padding: 6px 4px 22px;
 }
-header.app .logo {
-  width: 44px;
-  height: 44px;
-  border-radius: 12px;
-  background: linear-gradient(135deg, var(--accent), #8b5cf6);
-  display: grid;
-  place-items: center;
-  font-size: 24px;
-  box-shadow: var(--shadow);
+header.app h1 {
+  font-size: 26px;
+  margin: 0;
+  letter-spacing: -0.02em;
+  font-weight: 800;
 }
-header.app h1 { font-size: 22px; margin: 0; letter-spacing: -0.02em; }
-header.app .sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
 
 .card {
   background: var(--card);
@@ -161,24 +152,67 @@ button.ghost:active { background: var(--field); }
 .filebtn span { display: block; font-size: 30px; margin-bottom: 6px; }
 input[type="file"] { display: none; }
 
-h2.section { font-size: 15px; margin: 6px 2px 12px; color: var(--muted); }
+/* ---------- Listen-Editor ---------- */
+.segment.small button { padding: 9px; font-size: 14px; }
+label.mt { margin-top: 16px; }
 
-.jobs { list-style: none; margin: 0; padding: 0; }
-.job {
-  display: flex; align-items: center; gap: 12px; padding: 12px 4px;
-  border-bottom: 1px solid var(--border);
+.items { display: flex; flex-direction: column; gap: 8px; }
+.item { display: flex; gap: 8px; align-items: center; }
+.item input { flex: 1; padding: 12px 14px; font-size: 16px; }
+.item .del {
+  width: 42px; min-width: 42px; height: 42px; margin: 0; padding: 0;
+  font-size: 15px; font-weight: 700; border-radius: 12px;
+  background: var(--field); color: var(--muted); border: 1px solid var(--border);
 }
-.job:last-child { border-bottom: none; }
-.job .ic { font-size: 20px; width: 26px; text-align: center; }
-.job .body { flex: 1; min-width: 0; }
-.job .t { font-size: 15px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.job .time { font-size: 12px; color: var(--muted); margin-top: 2px; }
-.badge {
-  font-size: 12px; font-weight: 700; padding: 4px 10px; border-radius: 999px; white-space: nowrap;
+.item .del:active { background: var(--err-bg); color: var(--err); }
+
+button.ghost.add {
+  margin-top: 10px; padding: 12px; font-size: 15px;
+  border-style: dashed; color: var(--accent);
 }
-.badge.printed { color: var(--ok); background: var(--ok-bg); }
-.badge.pending { color: var(--wait); background: var(--wait-bg); }
-.badge.error { color: var(--err); background: var(--err-bg); }
-.empty { color: var(--muted); font-size: 14px; text-align: center; padding: 18px 0; }
+
+/* ---------- Bon-Vorschau ---------- */
+.bonwrap { margin-bottom: 16px; }
+.bonlabel { font-size: 13px; color: var(--muted); font-weight: 600; margin: 0 2px 8px; }
+
+.bon {
+  position: relative;
+  max-width: 300px;
+  margin: 0 auto;
+  filter: drop-shadow(0 10px 24px rgba(17, 24, 39, 0.18));
+}
+.bon-body {
+  background: #fdfdf8;
+  color: #1a1a1a;
+  padding: 20px 22px 22px;
+  font-family: "SFMono-Regular", ui-monospace, "DejaVu Sans Mono", Menlo, Consolas, monospace;
+  font-size: 14px;
+  line-height: 1.55;
+}
+.bon-edge {
+  height: 10px;
+  background:
+    linear-gradient(-45deg, transparent 50%, #fdfdf8 51%) 0 0 / 12px 12px repeat-x,
+    linear-gradient( 45deg, transparent 50%, #fdfdf8 51%) 0 0 / 12px 12px repeat-x;
+}
+.bon-edge.top { transform: rotate(180deg); }
+
+.bon-title {
+  text-align: center; font-weight: 700; font-size: 15px;
+  letter-spacing: 0.08em; text-transform: uppercase; word-break: break-word;
+  border: 3px double #1a1a1a; padding: 9px 10px; margin-bottom: 14px;
+}
+.bon-items { display: flex; flex-direction: column; gap: 7px; }
+.bon-item { display: flex; gap: 9px; align-items: flex-start; word-break: break-word; }
+.bon-box {
+  width: 13px; height: 13px; min-width: 13px; margin-top: 3px;
+  border: 1.6px solid #1a1a1a; border-radius: 2px;
+}
+.bon-dot { line-height: 1.4; }
+.bon-foot {
+  text-align: right; color: #6b6b64; margin-top: 16px;
+  border-top: 1px dashed #c9c9bf; padding-top: 8px; font-size: 13px;
+}
+.bon-empty { color: #9a9a90; text-align: center; padding: 10px 0; font-style: italic; }
 
 #installBtn { display: none; }

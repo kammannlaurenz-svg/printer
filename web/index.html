@@ -16,11 +16,7 @@
   <div class="wrap">
 
     <header class="app">
-      <div class="logo">🧾</div>
-      <div>
-        <h1>Bondrucker</h1>
-        <div class="sub">Text &amp; Bilder direkt auf den Bon</div>
-      </div>
+      <h1>Bondrucker</h1>
     </header>
 
     <!-- LOGIN -->
@@ -49,6 +45,7 @@
 
       <div class="segment">
         <button id="tabText" class="active" onclick="showTab('text')">📝 Text</button>
+        <button id="tabList" onclick="showTab('list')">📋 Liste</button>
         <button id="tabImage" onclick="showTab('image')">🖼️ Bild</button>
       </div>
 
@@ -61,6 +58,40 @@
           </div>
           <button id="sendTextBtn" onclick="sendText()">Drucken</button>
           <p id="textStatus" class="status"></p>
+          <p class="hint">Wird mit der Überschrift „NOTIZ" im Rahmen gedruckt.</p>
+        </div>
+      </div>
+
+      <!-- LISTE -->
+      <div id="pageList" class="page">
+        <div class="card">
+          <div class="field">
+            <label for="listTitle">Überschrift</label>
+            <input id="listTitle" placeholder="z.B. Einkaufsliste" oninput="renderBon()" />
+          </div>
+
+          <label>Art der Liste</label>
+          <div class="segment small">
+            <button id="modeList" class="active" onclick="setListMode('list')">• Liste</button>
+            <button id="modeTodo" onclick="setListMode('todo')">☐ To-Do</button>
+          </div>
+
+          <label class="mt">Punkte</label>
+          <div id="listItems" class="items"></div>
+          <button class="ghost add" onclick="addItem()">＋ Punkt hinzufügen</button>
+
+          <button id="sendListBtn" onclick="sendList()">Drucken</button>
+          <p id="listStatus" class="status"></p>
+        </div>
+
+        <!-- BON-VORSCHAU -->
+        <div class="bonwrap">
+          <div class="bonlabel">Vorschau des Bons</div>
+          <div class="bon">
+            <div class="bon-edge top"></div>
+            <div id="bonBody" class="bon-body"></div>
+            <div class="bon-edge bottom"></div>
+          </div>
         </div>
       </div>
 
@@ -79,11 +110,6 @@
         </div>
       </div>
 
-      <!-- VERLAUF -->
-      <div class="card">
-        <h2 class="section">Verlauf</h2>
-        <ul id="jobs" class="jobs"></ul>
-      </div>
     </div>
 
   </div>
