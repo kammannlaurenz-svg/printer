@@ -53,12 +53,16 @@
       <div id="pageText" class="page active">
         <div class="card">
           <div class="field">
+            <label for="textTitle">Überschrift</label>
+            <input id="textTitle" value="Notiz" placeholder="z.B. Notiz" />
+          </div>
+          <div class="field">
             <label for="text">Was soll gedruckt werden?</label>
             <textarea id="text" placeholder="Text eingeben…"></textarea>
           </div>
           <button id="sendTextBtn" onclick="sendText()">Drucken</button>
           <p id="textStatus" class="status"></p>
-          <p class="hint">Wird mit der Überschrift „NOTIZ" im Rahmen gedruckt.</p>
+          <p class="hint">Die Überschrift wird im Rahmen gedruckt. Leer lassen = ohne Überschrift.</p>
         </div>
       </div>
 

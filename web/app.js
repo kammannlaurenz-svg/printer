@@ -87,10 +87,13 @@ async function sendText() {
   const st = $("textStatus");
   if (!text) return setStatus(st, "Bitte Text eingeben.", "err");
 
+  const title = $("textTitle").value.trim();
+  const payload = title ? "[BOX]" + title + "\n" + text : text;
+
   setStatus(st, "Sende…", "");
   $("sendTextBtn").disabled = true;
   try {
-    await createJob({ type: "text", text: "[BOX]Notiz\n" + text, username: currentUser, status: "pending" });
+    await createJob({ type: "text", text: payload, username: currentUser, status: "pending" });
     $("text").value = "";
     setStatus(st, "Gesendet ✅", "ok");
   } catch (e) {
