@@ -1,0 +1,17 @@
+# Geheimnisse und lokale Dateien
+agent/.env
+agent/agent.log
+
+# Python
+__pycache__/
+*.pyc
+
+# System
+Thumbs.db
+.DS_Store
+
+# Vercel
+.vercel/
+
+# Claude Code (lokal)
+.claude/

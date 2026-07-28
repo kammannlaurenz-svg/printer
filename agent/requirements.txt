@@ -1,0 +1,7 @@
+# Fuer den Druck-Agent (Windows, Python 3.14).
+# Auf deinem PC sind diese bereits installiert.
+# Neu-Installation bei Bedarf:  python -m pip install -r requirements.txt
+requests
+pywin32
+Pillow
+pystray

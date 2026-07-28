@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Bondrucker</title>
+  <meta name="theme-color" content="#4f46e5" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Drucker" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="wrap">
+
+    <header class="app">
+      <div class="logo">🧾</div>
+      <div>
+        <h1>Bondrucker</h1>
+        <div class="sub">Text &amp; Bilder direkt auf den Bon</div>
+      </div>
+    </header>
+
+    <!-- LOGIN -->
+    <div id="loginView">
+      <div class="card">
+        <div class="field">
+          <label for="username">Name</label>
+          <input id="username" placeholder="Dein Name" autocomplete="username" />
+        </div>
+        <div class="field">
+          <label for="password">Passwort</label>
+          <input id="password" type="password" placeholder="Passwort" autocomplete="current-password" />
+        </div>
+        <button id="loginBtn" onclick="login()">Einloggen</button>
+        <p id="loginStatus" class="status"></p>
+      </div>
+      <button id="installBtn" class="ghost" onclick="installApp()">📲 Als App installieren</button>
+    </div>
+
+    <!-- APP -->
+    <div id="appView" hidden>
+      <div class="userbar">
+        <div class="who">Eingeloggt als <b id="showUser"></b></div>
+        <button class="ghost" onclick="logout()">Logout</button>
+      </div>
+
+      <div class="segment">
+        <button id="tabText" class="active" onclick="showTab('text')">📝 Text</button>
+        <button id="tabImage" onclick="showTab('image')">🖼️ Bild</button>
+      </div>
+
+      <!-- TEXT -->
+      <div id="pageText" class="page active">
+        <div class="card">
+          <div class="field">
+            <label for="text">Was soll gedruckt werden?</label>
+            <textarea id="text" placeholder="Text eingeben…"></textarea>
+          </div>
+          <button id="sendTextBtn" onclick="sendText()">Drucken</button>
+          <p id="textStatus" class="status"></p>
+        </div>
+      </div>
+
+      <!-- BILD -->
+      <div id="pageImage" class="page">
+        <div class="card">
+          <label class="filebtn" for="imageFile">
+            <span>🖼️</span>
+            Bild auswählen
+          </label>
+          <input id="imageFile" type="file" accept="image/*" onchange="previewImage()" />
+          <img id="preview" alt="Vorschau" />
+          <button id="sendImageBtn" onclick="sendImage()">Bild drucken</button>
+          <p id="imageStatus" class="status"></p>
+          <p class="hint">Das Bild wird automatisch verkleinert und in Schwarz-Weiß gedruckt.</p>
+        </div>
+      </div>
+
+      <!-- VERLAUF -->
+      <div class="card">
+        <h2 class="section">Verlauf</h2>
+        <ul id="jobs" class="jobs"></ul>
+      </div>
+    </div>
+
+  </div>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
